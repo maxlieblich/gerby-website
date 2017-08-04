@@ -1,8 +1,8 @@
 import os
 import json
 import sqlite3
-from flask import Flask, request, session, g, redirect, url_for, abort, render_template
-from flask_jsonpify import jsonify
+from flask import Flask, request, session, g, redirect, url_for, abort, render_template, jsonify
+from flask_cors import cross_origin
 import time
 
 from peewee import *
@@ -72,6 +72,7 @@ def show_tags():
   return render_template("show_tags.html", tags=all_tags())
 
 @app.route("/api/")
+@cross_origin()
 def api_show_tags():
   tags = all_tags()
   return jsonify({"tags": [model_to_dict(t) for t in tags]})
@@ -145,6 +146,7 @@ def little_dict(datum):
           "type": getattr(datum, "type", None)}
 
 @app.route("/api/tag/<string:tag>")
+@cross_origin()
 def api_show_tag(tag):
   tag, data = tag_data(tag)
   if tag.type == "chapter":
@@ -168,6 +170,7 @@ def show_chapters():
 
 
 @app.route("/api/browse")
+@cross_origin()
 def api_show_chapters():
   chapters = get_chapters()
   return jsonify({"chapters": [little_dict(c) for c in chapters]})
@@ -187,6 +190,7 @@ def show_search():
   return render_template("show_search.html", results=results)
 
 @app.route("/api/search")
+@cross_origin()
 def api_show_search():
   results = get_search()
   return jsonify({"results": [little_dict(r) for r in results]})

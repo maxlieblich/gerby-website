@@ -22,7 +22,7 @@ class App extends Component {
     if (pathname === "/undefined") {
       pathname = window.location.pathname;
     }
-    var url = "http://127.0.0.1:5000/api" + pathname + "?callback=?";
+    var url = "http://127.0.0.1:5000/api" + pathname;
     $.getJSON(url, function (result) {
       that.setState({content: result});
       window
