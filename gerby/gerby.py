@@ -75,7 +75,7 @@ def show_tags():
 @cross_origin()
 def api_show_tags():
   tags = all_tags()
-  return jsonify({"tags": [model_to_dict(t) for t in tags]})
+  return jsonify({"tags": [little_dict(t) for t in tags]})
 
 def tag_data(tag):
   tag = Tag.get(Tag.tag == tag)

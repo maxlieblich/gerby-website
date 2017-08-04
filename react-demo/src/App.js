@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
+import request from 'superagent';
 //import logo from './logo.svg';
 import './App.css';
-import $ from 'jquery';
+//import $ from 'jquery';
 
 function titleCase(string) {
   return string
@@ -10,6 +11,14 @@ function titleCase(string) {
 }
 
 class App extends Component {
+  simpleAPIexperience(err, res) {
+      //TODO: handle error
+      this.setState({content: res});
+      window
+        .MathJax
+        .Hub
+        .Queue(["Typeset", window.MathJax.Hub]);
+  }
   componentWillMount() {
     this.state = {
       content: {}
@@ -23,13 +32,25 @@ class App extends Component {
       pathname = window.location.pathname;
     }
     var url = "http://127.0.0.1:5000/api" + pathname;
-    $.getJSON(url, function (result) {
-      that.setState({content: result});
+    request
+    .get(url)
+    .end(function (err, res) {
+            //TODO: handle error
+      that.setState({content: res.body});
       window
         .MathJax
         .Hub
         .Queue(["Typeset", window.MathJax.Hub]);
+
     });
+
+    // $.getJSON(url, function (result) {
+    //   that.setState({content: result});
+    //   window
+    //     .MathJax
+    //     .Hub
+    //     .Queue(["Typeset", window.MathJax.Hub]);
+    // });
   }
 
   componentDidUpdate() {
