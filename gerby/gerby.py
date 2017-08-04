@@ -7,7 +7,6 @@ import time
 
 from peewee import *
 from playhouse.sqlite_ext import *
-from playhouse.shortcuts import model_to_dict
 
 FILENAME = "stacks.sqlite"
 
@@ -83,13 +82,16 @@ def tag_data(tag):
   if tag.type == "chapter":
     sections = Tag.select(Tag.tag, Tag.ref, LabelName.name).join(LabelName).where(Tag.type == "section", Tag.ref.startswith(tag.ref + "."))
     sections = sorted(sections)
+    #print([model_to_dict(s, backrefs=True) for s in sections])
 
     # to avoid n+1 query we select all tags at once and then let Python figure it out
     tags = Tag.select().where(Tag.ref.startswith(tag.ref + "."), Tag.type != "section")
     tags = sorted(tags)
     for section in sections:
       section.tags = [tag for tag in tags if tag.ref.startswith(section.ref + ".")]
+      section.name = section.labelname.name
 
+    # print([{"ref":s.ref, "name":s.labelname.name, "tag":s.tag} for s in sections])
     return tag, {"chapter": tag, "sections": sections}
 
   else:
@@ -106,6 +108,8 @@ def tag_data(tag):
 
       # TODO can we do a select with join without specifying all the columns?
       breadcrumb = sorted(Tag.select(Tag.tag, Tag.ref, Tag.type, LabelName.name).join(LabelName).where(Tag.ref << parents))
+      for crumb in breadcrumb:
+        crumb.name = crumb.labelname.name
 
     # if something is a section, we allow people to navigate by section
     sections = None
@@ -126,16 +130,32 @@ def show_tag(tag):
   else:
     return render_template("show_tag.html", tag=data["tag"], breadcrumb=data["breadcrumb"], proofs=data["proofs"])
 
+def read_tag(datum):
+  tag = getattr(datum, "tag", None)
+  if isinstance(tag, basestring):
+    return tag
+  else:
+    return getattr(tag, "tag", None)
+
+def little_dict(datum):
+  return {"tag": read_tag(datum),
+          "name": getattr(datum, "name", None), 
+          "ref": getattr(datum, "ref", None), 
+          "html": getattr(datum, "html", None),
+          "type": getattr(datum, "type", None)}
+
 @app.route("/api/tag/<string:tag>")
 def api_show_tag(tag):
   tag, data = tag_data(tag)
   if tag.type == "chapter":
-    return jsonify({"type": "chapter", "chapter": model_to_dict(data["chapter"]), "sections": [model_to_dict(s) for s in data["sections"]]})
+    return jsonify({"type": "chapter", 
+                    "chapter": little_dict(data["chapter"]), 
+                    "sections": [little_dict(s) for s in data["sections"]]})
   else:
-    bcrumb = [model_to_dict(d) for d in data["breadcrumb"]] if data["breadcrumb"] is not None else []
-    return jsonify({"type": "tag", "tag": model_to_dict(data["tag"]), 
+    bcrumb = [little_dict(d) for d in data["breadcrumb"]] if data["breadcrumb"] is not None else []
+    return jsonify({"type": "tag", "tag": little_dict(data["tag"]), 
                      "breadcrumb": bcrumb,
-                     "proofs": [model_to_dict(p) for p in data["proofs"]]})
+                     "proofs": [little_dict(p) for p in data["proofs"]]})
 
 def get_chapters():
   chapters = Tag.select(Tag.tag, Tag.ref, LabelName.name).join(LabelName).where(Tag.type == "chapter")
@@ -150,7 +170,7 @@ def show_chapters():
 @app.route("/api/browse")
 def api_show_chapters():
   chapters = get_chapters()
-  return jsonify({"chapters": [model_to_dict(c) for c in chapters]})
+  return jsonify({"chapters": [little_dict(c) for c in chapters]})
 
 # THESE ARE STUBS
 def get_search():
@@ -169,4 +189,4 @@ def show_search():
 @app.route("/api/search")
 def api_show_search():
   results = get_search()
-  return jsonify({"results": [model_to_dict(r) for r in results]})
+  return jsonify({"results": [little_dict(r) for r in results]})

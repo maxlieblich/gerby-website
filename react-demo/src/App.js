@@ -40,7 +40,7 @@ class App extends Component {
   }
 
   render() {
-    if (this.state.content.hasOwnProperty("type") && this.state.content.type === "tag") {
+    if (this.state.content.type === "tag") {
       let proofs = this
         .state
         .content
@@ -71,13 +71,14 @@ class App extends Component {
           }}/> {proofs}
         </div>
       );
-    } else if (this.state.content.hasOwnProperty("type") && this.state.content.type === "chapter") {
+    } else if (this.state.content.type === "chapter") {
+      console.log(this.state.content.sections);
       let output = this
         .state
         .content
         .sections
         .map((s) => <p key={s.tag + s.ref}>
-          <a href={"/tag/" + s.tag}>Tag {s.tag}</a> points to Section {s.ref}
+          <a href={"/tag/" + s.tag}>Tag {s.tag}</a> points to Section {s.ref}: {s.name}
         </p>);
       return (
         <div>
