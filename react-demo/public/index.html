@@ -18,6 +18,9 @@
       Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
+
+      http://sonoisa.github.io/xyjax_ext/xypic.js
+      https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js
     -->
     <title>Stacks Project</title>
       <link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/main.css">
@@ -27,7 +30,7 @@
       extensions: ['tex2jax.js'],
       preferredFont: "STIX",
       jax: ['input/TeX','output/HTML-CSS'],
-      TeX: {extensions: ['AMSmath.js', 'AMSsymbols.js', 'http://sonoisa.github.io/xyjax_ext/xypic.js'],
+      TeX: {extensions: ['AMSmath.js', 'AMSsymbols.js', '%PUBLIC_URL%/xypic.js'],
       TagSide: 'left'},
       tex2jax: {
         inlineMath: [['$','$']],
@@ -36,7 +39,7 @@
       'HTML-CSS': { scale: 85 }
     });
   </script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js"></script>
+  <script type="text/javascript" src="%PUBLIC_URL%/MathJax.js"></script>
   </head>
   <body>
   <header>
@@ -67,7 +70,6 @@
     <section id="meta">
     </section>
   </div>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> 
     <noscript>
       You need to enable JavaScript to run this app.
     </noscript>

@@ -41,16 +41,7 @@ class App extends Component {
         .MathJax
         .Hub
         .Queue(["Typeset", window.MathJax.Hub]);
-
     });
-
-    // $.getJSON(url, function (result) {
-    //   that.setState({content: result});
-    //   window
-    //     .MathJax
-    //     .Hub
-    //     .Queue(["Typeset", window.MathJax.Hub]);
-    // });
   }
 
   componentDidUpdate() {
